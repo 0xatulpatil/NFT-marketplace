@@ -38,6 +38,17 @@ contract nftmarketplace is ERC721URIStorage {
         //minting logic
         //upload tokenURI to IPFS
         //call to create marketItem.
+        require(
+            royalty < price,
+            "royalty should be less than the listing price"
+        );
+        _tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
+
+        _mint(msg.sender, newTokenId);
+        _setTokenURI(newTokenId, tokenURI);
+        createMarketplaceitem(newTokenId, price, royalty);
+        return newTokenId;
     }
 
     function createMarketplaceitem(
@@ -68,6 +79,9 @@ contract nftmarketplace is ERC721URIStorage {
     function buyFromMarketitems(uint256 tokenId) public payable {
         uint256 price = idToMarketItem[tokenId].price;
         address seller = idToMarketItem[tokenId].seller;
+        uint256 royalty = idToMarketItem[tokenId].royalty;
+        address artist = idToMarketItem[tokenId].artist;
+
         require(msg.value == price, "Sent value is less than asking price");
 
         idToMarketItem[tokenId].owner = payable(msg.sender);
@@ -75,7 +89,11 @@ contract nftmarketplace is ERC721URIStorage {
         idToMarketItem[tokenId].seller = payable(address(0));
         _itemsSold.increment();
         _transfer(address(this), msg.sender, tokenId);
-        payable(seller).transfer(msg.value);
+
+        //transfer the royalty to the artist (token minter)
+        payable(artist).transfer(royalty);
+        //transfer the remaining value to the seller;
+        payable(seller).transfer(msg.value - royalty);
     }
 
     function getAllMarketitems()
@@ -121,5 +139,24 @@ contract nftmarketplace is ERC721URIStorage {
             }
         }
         return items;
+    }
+
+    function resellToken(uint256 tokenId, uint256 price) public payable {
+        require(
+            idToMarketItem[tokenId].owner == msg.sender,
+            "Only item owner can resell token"
+        );
+        require(
+            idToMarketItem[tokenId].royalty < price,
+            "price should be atleast greater than royalty"
+        );
+
+        idToMarketItem[tokenId].sold = false;
+        idToMarketItem[tokenId].price = price;
+        idToMarketItem[tokenId].seller = payable(msg.sender);
+        idToMarketItem[tokenId].owner = payable(address(this));
+        _itemsSold.decrement();
+
+        _transfer(msg.sender, address(this), tokenId);
     }
 }
