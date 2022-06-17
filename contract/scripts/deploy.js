@@ -19,15 +19,19 @@ async function main() {
   const metadata3 = "https://ipfs.io/ipfs/QmVtq49yaZjuLJTvjHKibGAFfFERTbgBPoGRQpWHFGJvtP";
 
   //create tokens
+  let mint1 = await contract.mintToken(metadata1,listingPrice,royalty);
+  mint1.wait();
+  let mint2 = await contract.mintToken(metadata2,listingPrice,royalty);
+  mint2.wait();
+  let mint3 = await contract.mintToken(metadata3,listingPrice,royalty);
+  mint3.wait();
+
   await contract.mintToken(metadata1,listingPrice,royalty);
   console.log("token minted");
   await contract.mintToken(metadata2,listingPrice,royalty);
   await contract.mintToken(metadata3,listingPrice,royalty);
 
-//   const [owner,buyerAddress] = await ethers.getSigners();
-  
-//   await contract.connect(buyerAddress).buyFromMarketitems(1, {value:listingPrice});
-//   console.log('💰: Item bought');
+
   
  
   let tx1 = await contract.getAllMarketitems()
