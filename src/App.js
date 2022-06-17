@@ -7,6 +7,7 @@ import { SubNavigator } from './components/SubNavigator/SubNavigator';
 function App() {
 
   const [currentAccount, setCurrentAccount] = useState('');
+  const [section, setSection] = useState('marketItems');
 
 
   const CONTRACT_ADDRESS= '';
@@ -61,12 +62,15 @@ function App() {
     </div>
     );
   }
-
+  let NavProps = {
+	currentAccount:currentAccount,
+	currentSection:section,
+  }
   const renderConnected = () =>{
     return(
      <div>
-      <Nav address={currentAccount}/>
-      <SubNavigator />
+      <Nav currentAccount={currentAccount} />
+      <SubNavigator setSection={setSection} {...NavProps} />
      </div>
     )
   }
