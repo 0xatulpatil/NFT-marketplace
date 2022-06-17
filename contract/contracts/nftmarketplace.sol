@@ -43,12 +43,13 @@ contract nftmarketplace is ERC721URIStorage {
             "royalty should be less than the listing price"
         );
         _tokenIds.increment();
-        uint256 newTokenId = _tokenIds.current();
+        uint256 newTokenId = _tokenIds.current(); 
 
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
         createMarketplaceitem(newTokenId, price, royalty);
         return newTokenId;
+    
     }
 
     function createMarketplaceitem(
