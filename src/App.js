@@ -1,8 +1,10 @@
-import { render } from '@testing-library/react';
+
 import react, {useState, useEffect} from 'react';
 import './App.css';
 import {Nav} from './components/Nav/Nav';
 import { SubNavigator } from './components/SubNavigator/SubNavigator';
+import {MarketPlaceItems} from './components/MarketPlaceItems/MarketPlaceItems'
+
 
 function App() {
 
@@ -10,7 +12,7 @@ function App() {
   const [section, setSection] = useState('marketItems');
 
 
-  const CONTRACT_ADDRESS= '';
+  const CONTRACT_ADDRESS= '0x9F3EC3e71D2A6e5099a0059314D0CB956bE1B717';
 
 
   const checkIfWalletIsConnected = async () => {
@@ -71,6 +73,8 @@ function App() {
      <div>
       <Nav currentAccount={currentAccount} />
       <SubNavigator setSection={setSection} {...NavProps} />
+
+	  {section==='marketItems' ? <MarketPlaceItems /> : <>hello</>}
      </div>
     )
   }
