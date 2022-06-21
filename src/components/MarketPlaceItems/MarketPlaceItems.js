@@ -1,7 +1,8 @@
 import React,{useState,useEffect} from 'react';
 import { ethers } from 'ethers';
 import CONTRACT_ABI from '../utils/CONTRACT_ABI.json';
-import styles from './MarketPlaceItems.module.css'
+import styles from './MarketPlaceItems.module.css';
+import { NftCard } from '../NftCard/NftCard';
 
 
 
@@ -25,6 +26,7 @@ export const MarketPlaceItems = () => {
             )
         })
     }
+
     const getMarketItem = async()=>{
         try{
             const {ethereum} = window;
@@ -36,19 +38,25 @@ export const MarketPlaceItems = () => {
                 let tx1 = await contract.getAllMarketitems()
                 tx1 = await Promise.all(tx1.map(async i =>{
                     const tokenUr = await contract.tokenURI(i.tokenId);
+                    const metaData = await fetch(tokenUr);
+                    const metaDataJson = await metaData.json();
+                    // console.log(imageUrl.image_hash);
                     let item = {
+                    name:metaDataJson.name,
+                    desc:metaDataJson.description,
                     price: i.price.toString(),
                     tokenId: i.tokenId.toString(),
                     seller: i.seller,
                     owner:i.owner,
                     royalty:i.royalty.toString(),
-                    tokenUr
+                    tokenUr,
+                    imageURL:metaDataJson.image_hash
                     }
                     return item
                     
                 }));
                 setNftData(tx1);
-                console.log(nftData)
+                
             }
         }catch(err){
             console.log(err);
@@ -59,19 +67,9 @@ export const MarketPlaceItems = () => {
     }, []);
 
     return (
-    <div>
+    <div className={styles.mainDiv}>
        <h2>MarketPlaceItems</h2>
-       {/* { nftData.length > 0 ? listItems : <>Loading</>} */}
-       {/* <div>{nftData}</div> */}
-
-       {nftData.map(item=> {return(
-        <div className={styles.card}>
-            <div>Token Id:{item.tokenId}</div>
-            <div>Price:{item.price}</div>
-            <div>Seller:{item.seller}</div>
-
-        </div>
-       )})}
+       <NftCard nftData={nftData}/>
     </div>
 
     )

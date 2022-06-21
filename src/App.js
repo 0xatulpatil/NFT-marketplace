@@ -4,6 +4,7 @@ import './App.css';
 import {Nav} from './components/Nav/Nav';
 import { SubNavigator } from './components/SubNavigator/SubNavigator';
 import {MarketPlaceItems} from './components/MarketPlaceItems/MarketPlaceItems'
+import {MyNft} from './components/MyNft/MyNft'
 
 
 function App() {
@@ -73,8 +74,7 @@ function App() {
      <div>
       <Nav currentAccount={currentAccount} />
       <SubNavigator setSection={setSection} {...NavProps} />
-
-	  {section==='marketItems' ? <MarketPlaceItems /> : <>hello</>}
+	  {section==='marketItems' ? <MarketPlaceItems /> : <MyNft />}
      </div>
     )
   }
