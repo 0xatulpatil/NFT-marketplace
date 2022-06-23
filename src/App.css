@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0px;
   font-family: 'Sora', sans-serif;
+  
 }
 
 .connect-wallet-container{
@@ -25,6 +26,9 @@
   border: none;
   padding: 20px;
   cursor: pointer;
+}
+.renderConnected{
+  position: relative;
 }
 
 

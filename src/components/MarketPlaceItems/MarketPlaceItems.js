@@ -6,25 +6,35 @@ import { NftCard } from '../NftCard/NftCard';
 
 
 
+
 export const MarketPlaceItems = () => {
     const [nftData, setNftData] = useState([]);
 
 
-    const CONTRACT_ADDRESS = '0x9F3EC3e71D2A6e5099a0059314D0CB956bE1B717';
+    const CONTRACT_ADDRESS = '0xE4b758E75342440514ddE22c1Fb300F03462ED31';
 
-    const listItems = () =>{
-        nftData.map(nftItem => {
-            return(
-            <div>
-            {/* {()=>{
-                fetch(nftItem.token)
-            }} */}
-            <div>Token ID: {nftItem.tokenId}</div>
-            <div>Seller: {nftItem.seller}</div>
-            <div>Seller: {nftItem.tokenUr}</div>
-            </div>
-            )
-        })
+    const BuyNft = async(token,eth) =>{
+
+      try{
+          const {ethereum} = window;
+          if(ethereum){
+            const provider = new ethers.providers.Web3Provider(ethereum);
+            const signer = provider.getSigner();
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI.abi, signer);
+            const ehtPrice = ethers.utils.parseUnits(eth,18);
+            
+            let txn = async (token,eth) => {
+                let buy = await contract.buyFromMarketitems(token,{value:ehtPrice});
+                console.log(buy);
+            }
+            txn(token);
+            
+
+          }
+      }catch(err){
+        console.log(err);
+      }
+
     }
 
     const getMarketItem = async()=>{
@@ -39,10 +49,9 @@ export const MarketPlaceItems = () => {
                 tx1 = await Promise.all(tx1.map(async i =>{
                     const tokenUr = await contract.tokenURI(i.tokenId);
                     const metaData = await fetch(tokenUr);
-                    const metaDataJson = await metaData.json();
-                    // console.log(imageUrl.image_hash);
+                    let metaDataJson = await metaData.json();
                     let item = {
-                    name:metaDataJson.name,
+                    name:metaDataJson.name || 'abc',
                     desc:metaDataJson.description,
                     price: i.price.toString(),
                     tokenId: i.tokenId.toString(),
@@ -52,16 +61,18 @@ export const MarketPlaceItems = () => {
                     tokenUr,
                     imageURL:metaDataJson.image_hash
                     }
-                    return item
+                    return item;
                     
                 }));
                 setNftData(tx1);
                 
             }
+            
         }catch(err){
             console.log(err);
         }
     }
+
     useEffect(() => {
        getMarketItem();
     }, []);
@@ -69,7 +80,7 @@ export const MarketPlaceItems = () => {
     return (
     <div className={styles.mainDiv}>
        <h2>MarketPlaceItems</h2>
-       <NftCard nftData={nftData}/>
+       <NftCard nftData={nftData} onClick={BuyNft} btnText={"Buy"}/>
     </div>
 
     )

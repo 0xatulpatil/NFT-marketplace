@@ -4,16 +4,20 @@ import './App.css';
 import {Nav} from './components/Nav/Nav';
 import { SubNavigator } from './components/SubNavigator/SubNavigator';
 import {MarketPlaceItems} from './components/MarketPlaceItems/MarketPlaceItems'
-import {MyNft} from './components/MyNft/MyNft'
+import {MyNft} from './components/MyNft/MyNft';
+import { Routes, Route, Link } from "react-router-dom";
+import {MintNft} from "./components/MintNft/MintNft";
+import React from 'react';
 
 
 function App() {
 
   const [currentAccount, setCurrentAccount] = useState('');
   const [section, setSection] = useState('marketItems');
+  const [modal,setModal] = useState(true);
 
 
-  const CONTRACT_ADDRESS= '0x9F3EC3e71D2A6e5099a0059314D0CB956bE1B717';
+  const CONTRACT_ADDRESS= '0xE4b758E75342440514ddE22c1Fb300F03462ED31';
 
 
   const checkIfWalletIsConnected = async () => {
@@ -71,23 +75,27 @@ function App() {
   }
   const renderConnected = () =>{
     return(
-     <div>
+     <div className='renderConnedted'>
       <Nav currentAccount={currentAccount} />
       <SubNavigator setSection={setSection} {...NavProps} />
 	  {section==='marketItems' ? <MarketPlaceItems /> : <MyNft />}
+	  <MintNft showModal={modal} onClick={setModal}/>
+
      </div>
     )
   }
-
+ 
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
 
-  return (
-    <div className="App">
-      {currentAccount.length<42 && renderNotConnected()}
 
-      {currentAccount.length===42 ? renderConnected(): <div>Some error happended</div>}
+
+  return (
+    <div className="App">		 
+		{currentAccount.length<42 && renderNotConnected()}
+		{currentAccount.length===42 ? renderConnected(): <div>Some error happended</div>}
+		
     </div>
   );
 }
