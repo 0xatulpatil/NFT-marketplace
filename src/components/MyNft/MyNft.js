@@ -6,7 +6,7 @@ import { NftCard } from '../NftCard/NftCard';
 
 export const MyNft = () => {
     const [nftData, setNftData] = useState([]);
-    const CONTRACT_ADDRESS = '0xE4b758E75342440514ddE22c1Fb300F03462ED31';
+    const CONTRACT_ADDRESS = '0x1b23e0251bb4C5ED951bd6Ba94d086d6e142Bfd7';
 
     const getMyNfts = async ()=> {
        try{

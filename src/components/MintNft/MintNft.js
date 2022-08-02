@@ -5,10 +5,11 @@ import IPFS from 'ipfs-mini';
 import { ethers } from 'ethers';
 import { upload } from '@testing-library/user-event/dist/upload';
 import CONTRACT_ABI from '../utils/CONTRACT_ABI.json'
+import { useEffect } from 'react';
 
 const client = new create('https://ipfs.infura.io:5001/api/v0');
 const ipfs = new IPFS({host:'ipfs.infura.io',port:5001,protocol:'https'});
-const CONTRACT_ADDRESS = '0xE4b758E75342440514ddE22c1Fb300F03462ED31';
+const CONTRACT_ADDRESS = '0x1b23e0251bb4C5ED951bd6Ba94d086d6e142Bfd7';
 
 export const MintNft = (props) => {
 
@@ -17,14 +18,9 @@ export const MintNft = (props) => {
     const [picture,setPicture] = useState(null);
     const [price,setPrice] = useState('');
     const [royalty,setRoyalty] = useState('');
-    const [imageHash,setImageHash]=useState('');
+    const [imageHash,setImageHash]=useState('https://bafybeiaeoi66phx7f5gld7bciojh3bc74fa2j6dqjtn4jyzukteg7chtcu.ipfs.infura-ipfs.io/');
     const [tokenURI, setTokenURI] = useState('');
 
-
-    const onChangePicture = (e)=>{
-        console.log(e.target.files[0]);
-        setPicture(e.target.files[0]);
-    }
 
     const uploadPicture = async() =>{
        try{
@@ -32,29 +28,32 @@ export const MintNft = (props) => {
           const url = `https://ipfs.infura.io/ipfs/${added.path}`;
           console.log(url);
           setImageHash(url);
-
        }catch(e){
         console.log(e);
        }
     }
-  
-   const mint = async()=>{
-      uploadPicture().then(()=>{
-        const data = {
+
+    const uploadURI = async ()=>{
+      const data = {
             name:name,
             description:desc,
             image_hash:imageHash
         }
         const json = JSON.stringify(data);
+        let uri
 
         ipfs.add(json, (err,hash)=>{
             if(err){ return console.log(err);}
 
-            const uri = `https://ipfs.io/ipfs/${hash}`;
+            uri = `https://ipfs.io/ipfs/${hash}`;
             setTokenURI(uri);
-        })
-      }).then(()=>{
-        try{
+            console.log(uri);
+        });
+        // setTokenURI(uri);
+    }
+
+    const minting = async () =>{
+       try{
             const {ethereum} = window;
             if(ethereum){
                 const provider = new ethers.providers.Web3Provider(ethereum);
@@ -64,16 +63,21 @@ export const MintNft = (props) => {
                 const royalt = ethers.utils.parseUnits(royalty,18);
 
                 let txn = async() =>{
-                     contract.mintToken(tokenURI,pric,royalt);
+                     await contract.mintToken(tokenURI,pric,royalt);
+                    console.log(tokenURI);
                 }
-
                 console.log(txn());
             }
         }catch(err){
-            console.log(err);
+          console.log(err);
+          throw err;
         }
-      })
+    }
 
+   const mint = async()=>{
+   uploadURI().then(()=>{
+     minting();
+   })
    }
    
   return (
@@ -84,7 +88,7 @@ export const MintNft = (props) => {
     <p>Description</p>
     <input type="text" name="" id="" onChange={(e)=>{setDesc(e.target.value)}}/>
     <p>Image</p>
-    <input type="file" accept="image/png, image/jpg, image/gif, image/jpeg" onChange={onChangePicture}/>    
+    <input type="file" accept="image/png, image/jpg, image/gif, image/jpeg"/>    
     <p>Price</p>
     <input type="text" onChange={(e)=>{setPrice(e.target.value)}} />
     <p>Royalty</p>

@@ -11,7 +11,7 @@ export const MarketPlaceItems = () => {
     const [nftData, setNftData] = useState([]);
 
 
-    const CONTRACT_ADDRESS = '0xE4b758E75342440514ddE22c1Fb300F03462ED31';
+    const CONTRACT_ADDRESS = '0x1b23e0251bb4C5ED951bd6Ba94d086d6e142Bfd7';
 
     const BuyNft = async(token,eth) =>{
 
@@ -48,6 +48,7 @@ export const MarketPlaceItems = () => {
                 let tx1 = await contract.getAllMarketitems()
                 tx1 = await Promise.all(tx1.map(async i =>{
                     const tokenUr = await contract.tokenURI(i.tokenId);
+                    // console.log(tokenUr);
                     const metaData = await fetch(tokenUr);
                     let metaDataJson = await metaData.json();
                     let item = {
